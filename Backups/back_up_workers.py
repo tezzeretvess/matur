@@ -21,10 +21,6 @@ class Worker:
         self.move_timer = pg.time.get_ticks()
         self.data_gather_timer = pg.time.get_ticks()
 
-        image = pg.image.load("assets/graphics/worker.png").convert_alpha()
-        scaled_width = image.get_width()
-        scaled_height = image.get_height()
-        self.image = pg.transform.scale(image, (scaled_width, scaled_height))
 
         self.tile = tile
         self.world.workers[tile["grid"][0]][tile["grid"][1]] = self
@@ -78,7 +74,7 @@ class Worker:
 
         self.create_path()
 
- # Find positions of entities and other utilities
+    # Find positions of entities and other utilities
 
     def find_buildings_positions(self):
         building_positions = [(i, j) for i, row in enumerate(
@@ -299,10 +295,10 @@ class Worker:
         self.check_interacting_status()
         if self.need_interaction > 1:
             if (self.optimal_worker_give_pos or self.optimal_worker_steal_pos) is not None:
-                if self.interacting_behaviour == 1 and self.optimal_worker_give_pos is not None:  # Give behaviour
+                if self.interacting_behaviour == 1:  # Give behaviour
                     self.target_worker = self.world.workers[self.optimal_worker_give_pos[0]
                                                             ][self.optimal_worker_give_pos[1]]
-                elif self.interacting_behaviour == 2 and self.optimal_worker_steal_pos is not None:  # Steal behaviour
+                elif self.interacting_behaviour == 2:  # Steal behaviour
                     self.target_worker = self.world.workers[self.optimal_worker_steal_pos[0]
                                                             ][self.optimal_worker_steal_pos[1]]
 
@@ -684,6 +680,7 @@ class Worker:
             self.interaction_transfer = 0
 
     def update(self):
+        # self.debug()
         self.brain()
         self.loot_building()
         self.move()
@@ -692,4 +689,4 @@ class Worker:
         self.management_of_decay()
         self.data_gather()
 
-        
+        # self.debug()
