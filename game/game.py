@@ -60,7 +60,7 @@ class Game:
 
     def handle_events(self):
         now = pg.time.get_ticks()
-        if now - self.start_time >= self.end_time:
+        if now - self.start_time >= self.end_time and False:
             self.quit_game()
         for event in pg.event.get():
             if event.type == pg.QUIT:
