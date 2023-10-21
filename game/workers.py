@@ -22,9 +22,16 @@ class Worker:
         self.data_gather_timer = pg.time.get_ticks()
 
         if character == 1:
-            image = pg.image.load("assets/graphics/worker.png").convert_alpha()
+            if random.uniform(0,1) <= 0.5:
+                image = pg.image.load("assets/graphics/worker.png").convert_alpha()
+            else:
+                image = pg.image.load("assets/graphics/worker_f_u.png").convert_alpha()
         else:
-            image = pg.image.load("assets/graphics/thief.png").convert_alpha()
+            if random.uniform(0,1) <= 0.5:
+                image = pg.image.load("assets/graphics/thief.png").convert_alpha()
+            else:
+                image = pg.image.load("assets/graphics/thief_f.png").convert_alpha()
+
         scaled_width = image.get_width()
         scaled_height = image.get_height()
         self.image = pg.transform.scale(image, (scaled_width, scaled_height))
