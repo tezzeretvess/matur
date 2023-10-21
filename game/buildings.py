@@ -13,6 +13,7 @@ class Lumbermill:
 
     def update(self):
         now = pg.time.get_ticks()
+        # production of resources
         if now - self.resource_cooldown > 200:
             self.inventory += 1
             self.game.total_resources += 1

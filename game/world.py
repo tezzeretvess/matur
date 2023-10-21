@@ -15,15 +15,16 @@ class World:
         self.height = height
         self.game = game #maybe remove
 
+        # Scale factor Perlin noise
         self.perlin_scale = grid_length_x / 2
-
+        # Creation of world and collision matrix
         tile_width = grid_length_x * TILE_SIZE * 2
         tile_height = grid_length_y * TILE_SIZE + 2 * TILE_SIZE
         self.grass_tiles = pg.Surface((tile_width, tile_height)).convert_alpha()
         self.tiles = self.load_images()
         self.world = self.create_world()
         self.collision_matrix = self.create_collision_matrix()
-
+        # Arrays to keep track of the position of workers and buildings
         self.buildings = [[None] * (self.grid_length_x + 1) for _ in range(self.grid_length_y + 1)]
         self.workers = [[None] * self.grid_length_x for _ in range(self.grid_length_y)]
 
@@ -44,6 +45,7 @@ class World:
 
         grid_pos = self.mouse_to_grid(mouse_pos[0], mouse_pos[1], camera.scroll)
 
+        # The ability to place buildings during the simulation by hand
         if self.can_place_tile(grid_pos):
             if selected_tile is not None:
                 img = selected_tile["image"].copy()
@@ -74,6 +76,7 @@ class World:
                     self.examine_tile = grid_pos
                     self.hud.examined_tile = building
 
+    # Creates a new building and adds it to the world
     def create_building(self, grid_pos, game):
         
         ent = Lumbermill(self.world[grid_pos[0]][grid_pos[1]]["render_pos"], game)
@@ -85,6 +88,7 @@ class World:
         tile_data["collision"] = True
         self.collision_matrix[grid_pos[1]][grid_pos[0]] = 0
 
+    # Rendering of the simulation
     def draw(self, screen, camera):
         screen.blit(self.grass_tiles, (camera.scroll.x, camera.scroll.y))
 
@@ -155,6 +159,7 @@ class World:
             )
             screen.blit(temp_image, temp_position)
 
+    # Creates the world grid
     def create_world(self):
         world = [
             [
@@ -207,6 +212,7 @@ class World:
 
         return out
 
+    # Creates the collision matrix based on the world grid
     def create_collision_matrix(self):
         collision_matrix = [[1 for _ in range(self.grid_length_x)] for _ in range(self.grid_length_y)]
         for x in range(self.grid_length_x):
@@ -231,11 +237,11 @@ class World:
         grid_y = int(cart_y // TILE_SIZE)
         return grid_x, grid_y
 
+    # Loads images and stores it in a list
     def load_images(self):
         scaling_factor = 0.75  # Scale factor for assets
         image_files = {
             "building1": "assets/graphics/building01.png",
-            "building2": "assets/graphics/building02.png",
             "tree": "assets/graphics/tree.png",
             "tree1": "assets/graphics/tree1.png",
             "tree2": "assets/graphics/tree2.png",
@@ -262,6 +268,7 @@ class World:
         world_bounds = (0 <= grid_pos[0] < self.grid_length_x) and (0 <= grid_pos[1] < self.grid_length_y)
         return world_bounds and not mouse_on_panel
 
+    # Scales an image
     def scale_image(self, image, w=None, h=None):
         if w is None and h is None:
             return image

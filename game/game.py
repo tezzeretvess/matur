@@ -20,15 +20,15 @@ class Game:
         self.end_time = 10000
 
         # Controls
-        self.GIVING_WORKER_COUNT = 5
-        self.STEALING_WORKER_COUNT = 3
-        self.BUILDING_COUNT = 7
+        self.GIVING_WORKER_COUNT = 10
+        self.STEALING_WORKER_COUNT = 10
+        self.BUILDING_COUNT = 15
         self.WORLD_SIZE = 50
 
         # entities
         self.entities = []
 
-        # resource manager
+        # Counter of the total resources produced
         self.total_resources = 0
 
         # hud
@@ -37,8 +37,10 @@ class Game:
         # world
         self.world = World(self.entities, self.hud, self.WORLD_SIZE,
                            self.WORLD_SIZE, self.width, self.height, self)
+        # buildings
         for _ in range(self.BUILDING_COUNT):
             self.create_random_lumbermill()
+        # worker
         for _ in range(self.GIVING_WORKER_COUNT):
             Worker(self.world.world[25][25], self.world, 1, "GW" + str(_))
         for _ in range(self.STEALING_WORKER_COUNT):
@@ -58,7 +60,7 @@ class Game:
 
     def handle_events(self):
         now = pg.time.get_ticks()
-        if now - self.start_time >= self.end_time:
+        if now - self.start_time >= self.end_time and False:
             self.quit_game()
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -95,11 +97,12 @@ class Game:
                         entity.interaction_count_all_time,
                         entity.interaction_transfer_all_time,
                         entity.step_counter,
-                        entity.export_inventory,  # Modified to use the adjusted inventory_values
+                        entity.export_inventory,  
                         entity.export_interaction_with_time,
                         entity.export_interaction_transfers_with_time
                     ])
 
+            # Export the parameters of the simulation
             self.export_sheet_data(writer, "game_data", [
                 ["ID", "Character value", "Building looted", "Interaction count", "Interaction transfer",
                     "Step counter", "Inventory", "Interactions with timer", "Interactions transfers with timer"]
@@ -118,7 +121,7 @@ class Game:
 
                     inventory_values = entity.export_inventory
 
-                    # Ensure inventory_values has exactly 32 items, padding with the last item
+                    # Ensure inventory_values have the right length
                     while len(inventory_values) < self.export_items_count:
                         inventory_values.append(inventory_values[-1])
 
@@ -129,7 +132,7 @@ class Game:
                     row_data.extend(inventory_values)
                     data.append(row_data)
 
-            
+            # export the inventory levels of all the workers
             self.export_sheet_data(writer, "inventory_data", [
                 ["ID", "Inventory"] +
                 [i+1 for i in range(len(inventory_values))]
@@ -147,6 +150,7 @@ class Game:
                     row_data.extend(interaction_values)
                     data.append(row_data)
 
+            # export the amount of interactions of all the workers
             self.export_sheet_data(writer, "interactions_with_time_data", [
                 ["ID", "Interactions"] +
                 [i+1 for i in range(len(interaction_values))]
@@ -164,6 +168,7 @@ class Game:
                     row_data.extend(interaction_transfer_values)
                     data.append(row_data)
 
+            # export the amount that has been transfered during an interaction of all the workers
             self.export_sheet_data(writer, "interaction_transfer_data", [
                 ["ID", "Interaction transfer amounts"] +
                 [i+1 for i in range(len(interaction_transfer_values))]
@@ -181,6 +186,7 @@ class Game:
                     row_data.extend(step_values)
                     data.append(row_data)
 
+            # export the amount of steps taken of all the workers
             self.export_sheet_data(writer, "Steps with time", [
                 ["ID", "Steps with time"] +
                 [i+1 for i in range(len(step_values))]
@@ -225,7 +231,7 @@ class Game:
             x = random.randint(0, self.world.grid_length_x - 1)
             y = random.randint(0, self.world.grid_length_y - 1)
 
-            # Check if the chosen position is suitable (not in collision and not too close to existing buildings)
+            # Check if the chosen position is suitable 
             if (
                 not self.world.world[x][y]["collision"]
                 and self.is_far_from_existing_buildings(x, y, min_distance=5)
@@ -242,5 +248,5 @@ class Game:
         return True
 
     def distance(self, x1, y1, x2, y2):
-        # Calculate the Euclidean distance between two grid positions
+        # Calculate the distance between two grid positions
         return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5

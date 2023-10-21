@@ -21,7 +21,17 @@ class Worker:
         self.move_timer = pg.time.get_ticks()
         self.data_gather_timer = pg.time.get_ticks()
 
-        image = pg.image.load("assets/graphics/worker.png").convert_alpha()
+        if character == 1:
+            if random.uniform(0,1) <= 0.5:
+                image = pg.image.load("assets/graphics/worker.png").convert_alpha()
+            else:
+                image = pg.image.load("assets/graphics/worker_f_u.png").convert_alpha()
+        else:
+            if random.uniform(0,1) <= 0.5:
+                image = pg.image.load("assets/graphics/thief.png").convert_alpha()
+            else:
+                image = pg.image.load("assets/graphics/thief_f.png").convert_alpha()
+
         scaled_width = image.get_width()
         scaled_height = image.get_height()
         self.image = pg.transform.scale(image, (scaled_width, scaled_height))
@@ -58,10 +68,10 @@ class Worker:
         self.export_steps_with_time = []
 
         # Need variabeles
-        self.need_gather = 0  # control gather behavior
-        self.need_steal = 0  # control steal behavior
-        self.need_give = 0  # control give behavior
-        self.need_interaction = 0  # control interaction behavior
+        self.need_gather = 0  
+        self.need_steal = 0  
+        self.need_give = 0  
+        self.need_interaction = 0  
 
         # Pathfinding
         self.heading = None
@@ -139,7 +149,7 @@ class Worker:
             # Filter out the worker's own position and sort by distance
             distances = [(dist, person_pos) for dist, person_pos in zip(
                 all_dist, all_people_pos) if person_pos != self.tile["grid"]]
-            distances.sort()  # Sort by distance
+            distances.sort()  
             if distances:
                 _, nearest_person_position = distances[0]
                 x, y = nearest_person_position
@@ -176,7 +186,7 @@ class Worker:
                 ):
                     return (x, y)  # Return the first valid spot found
 
-        return None  # Return None if no valid spot is found
+        return None  
 
     # Pathfinding
 
@@ -201,7 +211,7 @@ class Worker:
 
         else:
             if destination[0] is None or destination[1] is None:
-                return  # Return if either component of the destination is None
+                return  
             else:
                 x = destination[0]
                 y = destination[1]
@@ -233,8 +243,6 @@ class Worker:
             self.step_counter_with_timer += 1
 
     def move(self):
-        # Informations
-        nearest_building_position, dist_to_all_buildings, people_positions, nearest_person_position, dist_to_all_persons, worker, building = self.util_return()
         # Move
         if self.is_moving:
             destination = self.moving_behaviour(self.moving_number)
@@ -242,7 +250,7 @@ class Worker:
             if now - self.move_timer > 10:
                 if not self.path:  # No current path
                     self.create_path(destination)
-                    self.path_index = 0  # Reset path index
+                    self.path_index = 0  
                 elif self.path_index >= len(self.path):  # Path is complete
                     destination = self.moving_behaviour(self.moving_number)
                     self.create_path(destination)
@@ -257,10 +265,10 @@ class Worker:
         if number == 1 and self.is_moving:
             return None
         elif number == 2 and self.is_moving:
-            if self.interacting_behaviour == 1:  # Give behavior
+            if self.interacting_behaviour == 1:  # altruistic behavior
                 if self.optimal_worker_give_pos:
                     return self.find_valid_spot_around_destination(self.optimal_worker_give_pos)
-            elif self.interacting_behaviour == 2:  # Steal behavior
+            elif self.interacting_behaviour == 2:  # egoistic behavior
                 if self.optimal_worker_steal_pos:
                     return self.find_valid_spot_around_destination(self.optimal_worker_steal_pos)
         elif number == 3 and self.is_moving:
@@ -272,11 +280,11 @@ class Worker:
     # Specific movement
 
     def follow_person_behavior(self, behaviour=0):
-        if behaviour == 1:  # Give behavior
+        if behaviour == 1:  # altruistic behavior
             if self.optimal_worker_give_pos is not None:
                 self.create_path(self.find_valid_spot_around_destination(
                     self.optimal_worker_give_pos))
-        elif behaviour == 2:  # Steal behavior
+        elif behaviour == 2:  # egoistic behavior
             if self.optimal_worker_steal_pos is not None:
                 self.create_path(self.find_valid_spot_around_destination(
                     self.optimal_worker_steal_pos))
@@ -284,7 +292,7 @@ class Worker:
             self.moving_number = 4
 
     def go_to_building_behavior(self):
-        # Go to the nearest building
+        # Go to the optimal building
         if self.optimal_building_pos is not None:
             self.heading = self.find_valid_spot_around_destination(
                 self.optimal_building_pos)
@@ -299,10 +307,10 @@ class Worker:
         self.check_interacting_status()
         if self.need_interaction > 1:
             if (self.optimal_worker_give_pos or self.optimal_worker_steal_pos) is not None:
-                if self.interacting_behaviour == 1 and self.optimal_worker_give_pos is not None:  # Give behaviour
+                if self.interacting_behaviour == 1 and self.optimal_worker_give_pos is not None:  # altruistic behaviour
                     self.target_worker = self.world.workers[self.optimal_worker_give_pos[0]
                                                             ][self.optimal_worker_give_pos[1]]
-                elif self.interacting_behaviour == 2 and self.optimal_worker_steal_pos is not None:  # Steal behaviour
+                elif self.interacting_behaviour == 2 and self.optimal_worker_steal_pos is not None:  # egoistic behaviour
                     self.target_worker = self.world.workers[self.optimal_worker_steal_pos[0]
                                                             ][self.optimal_worker_steal_pos[1]]
 
@@ -330,7 +338,7 @@ class Worker:
         else:
             self.is_moving = True
 
-    def loot_building(self):  # loot any building in range of 3 and inv > 15
+    def loot_building(self):  # loot any building in range of 3 
         building_pos, dist = self.find_distance_buildings()
         if building_pos is not None:
             x, y = building_pos
@@ -349,8 +357,7 @@ class Worker:
             pass
 
     # Interaction between players
-    # give (true) or steal (false)
-    def interaction_amount_calculations(self, target, give, percent, random_control=0):
+    def interaction_amount_calculations(self, target, give, percent, random_control=0): # give (true) or steal (false)
         if give:
             inventory_diff = self.inventory - target.inventory
             give_amount = inventory_diff * \
@@ -446,7 +453,7 @@ class Worker:
                 if distance > 0:
                     proximity_value = proximity_weight / distance
                 else:
-                    proximity_value = 0  # Avoid division by zero
+                    proximity_value = 0  
 
                 # Inventory
                 inventory_value = inventory_weight * building.inventory
@@ -465,12 +472,12 @@ class Worker:
                         max_building_inventory = inventory_value
                         best_building_position = building_pos
 
-                # Check if this building has much more inventory than others
+                
                 if highest_inventory_building is None or building.inventory > highest_inventory_building.inventory:
                     highest_inventory_building_pos = building_pos
                     highest_inventory_building = building
 
-            # If there's a building with much more inventory, prioritize it
+            # If there's a building with four times the inventory of the second highest
             if (
                 highest_inventory_building
                 and second_highest_inventory_building
@@ -571,7 +578,7 @@ class Worker:
 
     def need_management(self):
         # Informations
-        nearest_building_position, dist_to_all_buildings, people_positions, nearest_person_position, dist_to_all_persons, worker_close, building = self.util_return()
+        nearest_building_position, _, _, _, _, _, _ = self.util_return()
 
         # Calculate needs
         if nearest_building_position is not None:
@@ -650,22 +657,7 @@ class Worker:
 
     # Updating
 
-    def debug(self):
-        # print("Gather need: " + str(self.need_gather) + " Give need " + str(self.need_give) +
-        #      " Steal need: " + str(self.need_steal) + " Inventory: "+str(self.inventory))
-        # print("IS INTERACTING: " + str(self.is_interacting) + " IS MOVING: " + str(self.is_moving))
-        # print("Moving number: " + str(self.moving_number))
-
-        # print("Goal: " + str(self.moving_behaviour(self.moving_number)) + " RealPos " + str(self.optimal_building_pos) +
-        #     " Own pos " + str(self.tile["grid"]))
-        if self.need_give > 10:
-            print("Give need: " + str(self.need_give))
-        # print("All buildings pos: " + str(self.find_buildings_positions()))
-        if self.is_being_interacted:
-            print("IS BEING INTERACTED")
-        if self.is_interacting:
-            print("INTERACTS")
-
+    # Gather the selected data every second
     def data_gather(self):
         now = pg.time.get_ticks()
         if now - self.data_gather_timer >= 1000:
