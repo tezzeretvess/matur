@@ -20,9 +20,9 @@ class Game:
         self.end_time = 10000
 
         # Controls
-        self.GIVING_WORKER_COUNT = 20
-        self.STEALING_WORKER_COUNT = 0
-        self.BUILDING_COUNT = 7
+        self.GIVING_WORKER_COUNT = 5
+        self.STEALING_WORKER_COUNT = 5
+        self.BUILDING_COUNT = 15
         self.WORLD_SIZE = 50
 
         # entities

@@ -242,7 +242,6 @@ class World:
         scaling_factor = 0.75  # Scale factor for assets
         image_files = {
             "building1": "assets/graphics/building01.png",
-            "building2": "assets/graphics/building02.png",
             "tree": "assets/graphics/tree.png",
             "tree1": "assets/graphics/tree1.png",
             "tree2": "assets/graphics/tree2.png",
