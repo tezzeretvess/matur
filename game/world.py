@@ -193,11 +193,11 @@ class World:
         r = random.randint(1, 100)
 
         if perlin >= 15 or perlin <= -35:
-            tree_mapping = {"1": "tree", "2": "tree1", "3": "tree2"}
+            tree_mapping = {"1": "tree", "2": "tree1", "3": "tree2", "4": "tree3"}
             tile = tree_mapping.get(str(random.randint(1, 4)), "tree")
         elif r <= 4:
-            stone_mapping = {"1": "stone", "2": "stone1", "3": "stone2"}
-            tile = stone_mapping.get(str(random.randint(1, 4)), "stone")
+            stone_mapping = {"1": "stone", "2": "stone1", "3": "stone2", "4": "tree4"}
+            tile = stone_mapping.get(str(random.randint(1, 5)), "stone")
         else:
             tile = ""
 
@@ -242,9 +242,11 @@ class World:
         scaling_factor = 0.75  # Scale factor for assets
         image_files = {
             "building1": "assets/graphics/building01.png",
-            "tree": "assets/graphics/tree.png",
-            "tree1": "assets/graphics/tree1.png",
-            "tree2": "assets/graphics/tree2.png",
+            "tree": "assets/graphics/nt1.png",
+            "tree1": "assets/graphics/nt2a.png",
+            "tree2": "assets/graphics/nt2b.png",
+            "tree3": "assets/graphics/nt2c.png",
+            "tree4": "assets/graphics/nt3.png",
             "stone": "assets/graphics/stone.png",
             "stone1": "assets/graphics/stone1.png",
             "stone2": "assets/graphics/stone2.png",
