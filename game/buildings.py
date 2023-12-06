@@ -5,7 +5,7 @@ class Lumbermill:
     def __init__(self, pos, game):
         image = pg.image.load("assets/graphics/building01.png")
         self.image = image
-        self.name = "lumbermill"
+        self.name = "building"
         self.rect = self.image.get_rect(topleft=pos)
         self.resource_cooldown = pg.time.get_ticks()
         self.inventory = 0
